@@ -64,6 +64,13 @@ module.exports = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+      fontFamily: {
+        sans: ['Inter_400Regular'],
+        inter: ['Inter_400Regular'],
+        'inter-medium': ['Inter_500Medium'],
+        'inter-semibold': ['Inter_600SemiBold'],
+        'inter-bold': ['Inter_700Bold'],
+      },
     },
   },
   future: {
