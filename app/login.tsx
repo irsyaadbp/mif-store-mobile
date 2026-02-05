@@ -54,7 +54,10 @@ export default function LoginScreen() {
               onChangeText={setPassword}
               secureTextEntry
             />
-            <Pressable className="items-end mt-1">
+            <Pressable 
+              className="items-end mt-1"
+              onPress={() => router.push('/forgot-password')}
+            >
               <Text className="text-primary font-inter-bold">Lupa Password?</Text>
             </Pressable>
           </View>
