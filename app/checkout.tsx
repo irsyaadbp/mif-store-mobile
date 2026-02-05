@@ -117,7 +117,7 @@ export default function CheckoutScreen() {
                     onChangeText={setAddress}
                     multiline
                     numberOfLines={4}
-                    className="h-32 pt-4 bg-white"
+                    className="h-32 pt-4 bg-white items-start"
                     textAlignVertical="top"
                   />
                 </View>

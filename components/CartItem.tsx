@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Image, Pressable } from 'react-native';
 import { Text } from '@/components/ui/text';
 
-import { Minus, Plus, Trash2 } from 'lucide-react-native';
+import { Minus, Plus, Trash2, CameraOff } from 'lucide-react-native';
 import type { Product } from '@/service/products';
 
 interface CartItemProps {
@@ -13,6 +13,8 @@ interface CartItemProps {
 }
 
 export function CartItem({ product, quantity, onUpdateQuantity, onRemove }: CartItemProps) {
+  const [imageError, setImageError] = React.useState(false);
+
   const formattedPrice = new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',
@@ -28,8 +30,17 @@ export function CartItem({ product, quantity, onUpdateQuantity, onRemove }: Cart
 
       <View className="flex-1 flex-row items-center gap-4">
         {/* Image */}
-        <View className="h-20 w-20 overflow-hidden rounded-2xl bg-muted">
-          <Image source={{ uri: product.imageUrl }} className="h-full w-full" resizeMode="cover" />
+        <View className="h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-muted">
+          {imageError || !product.imageUrl ? (
+            <CameraOff size={24} color="#9ca3af" />
+          ) : (
+            <Image
+              source={{ uri: product.imageUrl }}
+              className="h-full w-full"
+              resizeMode="cover"
+              onError={() => setImageError(true)}
+            />
+          )}
         </View>
 
         {/* Details & Controls */}
