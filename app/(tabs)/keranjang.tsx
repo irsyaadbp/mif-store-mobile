@@ -137,7 +137,7 @@ export default function KeranjangScreen() {
 
       {/* Sticky Footer */}
       {cart.length > 0 && (
-        <View className="absolute bottom-0 left-0 right-0 border-t border-border bg-white p-6 shadow-2xl">
+        <View className="absolute bottom-0 left-0 right-0 border-t border-border bg-white px-6 py-4 shadow-2xl">
           <View className="mb-6 flex-row items-center justify-between">
             <Text className="text-xl font-bold text-foreground">Total</Text>
             <Text className="text-xl font-bold text-foreground">
@@ -152,10 +152,16 @@ export default function KeranjangScreen() {
               onPress={() => router.push('/produk')}>
               <Text className="font-bold text-secondary">Lanjut Belanja</Text>
             </Button>
-            <Button variant="default" className="h-14 flex-1 rounded-2xl" onPress={() => {}}>
+            <Button
+              variant="default"
+              className="h-14 flex-1 rounded-2xl"
+              onPress={() => router.push('/checkout')}>
               <Text className="font-bold text-primary-foreground">Checkout</Text>
             </Button>
           </View>
+          <Text className="text-center text-xs text-muted-foreground opacity-40 mt-4">
+            Login diperlukan saat melakukan pembayaran
+          </Text>
         </View>
       )}
     </View>
