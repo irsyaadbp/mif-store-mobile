@@ -8,15 +8,24 @@ import * as React from 'react';
 import { View, ScrollView, Image, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
+import { useToast } from '@/context/ToastContext';
 
 export default function CheckoutScreen() {
-  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
-  const { cartItems } = useCart();
+  const { isAuthenticated, isLoading: isAuthLoading, user } = useAuth();
+  const { cartItems, clearCart } = useCart();
+  const { showToast } = useToast();
   const { buyNowItem } = useLocalSearchParams();
   
-  const [name, setName] = React.useState('');
+  const [name, setName] = React.useState(user?.fullname || '');
   const [address, setAddress] = React.useState('');
   const [notes, setNotes] = React.useState('');
+
+  // Autofill name when user data loads
+  React.useEffect(() => {
+    if (user?.fullname) {
+      setName(user.fullname);
+    }
+  }, [user]);
 
   const checkoutItems = React.useMemo(() => {
     if (buyNowItem) {
@@ -50,6 +59,18 @@ export default function CheckoutScreen() {
       currency: 'IDR',
       minimumFractionDigits: 0,
     }).format(val).replace('Rp', 'Rp ');
+  };
+
+  const handlePayment = () => {
+    if (!name.trim() || !address.trim()) {
+      showToast('Mohon lengkapi Nama dan Alamat pengiriman.', 'error');
+      return;
+    }
+
+    if (!buyNowItem) {
+      clearCart();
+    }
+    router.replace('/checkout-success');
   };
 
   return (
@@ -158,7 +179,7 @@ export default function CheckoutScreen() {
               <Text className="text-muted-foreground">Total Tagihan</Text>
               <Text className="text-2xl font-bold text-foreground">{formatCurrency(total)}</Text>
             </View>
-            <Button className="h-14 px-8 rounded-2xl" onPress={() => {}}>
+            <Button className="h-14 px-8 rounded-2xl" onPress={handlePayment}>
               <Text className="font-bold">Bayar Sekarang</Text>
             </Button>
           </View>
