@@ -17,6 +17,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAsyncFetch } from '@/hooks/useAsyncFetch';
 import { ProductService } from '@/service/products';
+import { useAuth } from '@/context/AuthContext';
 
 const { width } = Dimensions.get('window');
 
@@ -27,6 +28,7 @@ export default function ProductDetailScreen() {
   const { addToCart } = useCart();
   const { showToast } = useToast();
   const [imgError, setImgError] = React.useState(false);
+  const { isAuthenticated } = useAuth();
 
   const getProduct = React.useCallback(() => ProductService.getProductById(id as string), [id]);
 
@@ -74,10 +76,17 @@ export default function ProductDetailScreen() {
 
   const handleBuyNow = () => {
     const item = { product, quantity: qty };
-    router.push({
-      pathname: '/checkout',
-      params: { buyNowItem: JSON.stringify(item) }
-    });
+    if (!isAuthenticated) {
+      router.push({
+        pathname: '/login',
+        params: { redirectTo: '/checkout', buyNowItem: JSON.stringify(item) },
+      });
+    } else {
+      router.push({
+        pathname: '/checkout',
+        params: { buyNowItem: JSON.stringify(item) },
+      });
+    }
   };
 
   return (

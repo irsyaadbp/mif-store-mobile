@@ -8,8 +8,11 @@ import { router } from 'expo-router';
 
 import { useCart } from '@/context/CartContext';
 
+import { useAuth } from '@/context/AuthContext';
+
 export default function KeranjangScreen() {
   const { cartItems, updateQuantity, removeFromCart, totalAmount } = useCart();
+  const { isAuthenticated } = useAuth();
 
   const formattedTotal = new Intl.NumberFormat('id-ID', {
     style: 'currency',
@@ -66,13 +69,21 @@ export default function KeranjangScreen() {
             <Button
               variant="default"
               className="h-14 flex-1 rounded-2xl"
-              onPress={() => router.push('/checkout')}>
+              onPress={() => {
+                if (!isAuthenticated) {
+                  router.push('/login?redirectTo=/checkout');
+                } else {
+                  router.push('/checkout');
+                }
+              }}>
               <Text className="font-bold text-primary-foreground">Checkout</Text>
             </Button>
           </View>
-          <Text className="mt-4 text-center text-xs text-muted-foreground opacity-40">
-            Login diperlukan saat melakukan pembayaran
-          </Text>
+          {!isAuthenticated && (
+            <Text className="mt-4 text-center text-xs text-muted-foreground opacity-40">
+              Kamu akan diarahkan ke halaman login
+            </Text>
+          )}
         </View>
       )}
     </View>
