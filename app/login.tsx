@@ -1,11 +1,15 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
-import { Link, router } from 'expo-router';
-import { Mail, Lock } from 'lucide-react-native';
+import { Link, router, useNavigation } from 'expo-router';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import * as React from 'react';
-import { Image, type ImageStyle, View, ScrollView, Pressable } from 'react-native';
+import { Image, type ImageStyle, View, ScrollView, Pressable, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
+import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/context/ToastContext';
+import { useAsyncFetch } from '@/hooks/useAsyncFetch';
+import { Icon } from '@/components/ui/icon';
 
 const IMAGE_STYLE: ImageStyle = {
   height: 60,
@@ -13,13 +17,35 @@ const IMAGE_STYLE: ImageStyle = {
 };
 
 export default function LoginScreen() {
-  const { colorScheme } = useColorScheme();
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [showPassword, setShowPassword] = React.useState(false);
+  
+  const { login } = useAuth();
+  const { showToast } = useToast();
+
+  const { isLoading, execute: handleLogin } = useAsyncFetch(
+    () => login({ email, password }),
+    {
+      immediate: false,
+      onSuccess: () => {
+        showToast('Berhasil masuk!', 'success');
+        router.replace('/(tabs)');
+      },
+      onError: (error: any) => {
+        showToast(error.message || 'Login gagal. Cek kembali email dan password anda.', 'error');
+      }
+    }
+  );
 
   return (
-    <ScrollView className="flex-1 bg-background" contentContainerStyle={{ flexGrow: 1 }}>
-      <View className="flex-1 p-8 pt-20 items-center">
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0} // Adjust based on header height if needed
+    >
+      <ScrollView className="flex-1 bg-background" contentContainerStyle={{ flexGrow: 1 }}>
+        <View className="flex-1 p-8 pt-20 items-center">
         {/* Logo Section */}
         <View className="items-center justify-center h-20 w-20 rounded-full bg-orange-50 mb-6">
           <Image 
@@ -52,7 +78,16 @@ export default function LoginScreen() {
               placeholder="Masukkan password"
               value={password}
               onChangeText={setPassword}
-              secureTextEntry
+              secureTextEntry={!showPassword}
+              rightElement={
+                <Pressable onPress={() => setShowPassword(!showPassword)}>
+                  <Icon 
+                    as={showPassword ? EyeOff : Eye} 
+                    size={20} 
+                    className="text-muted-foreground mr-2" 
+                  />
+                </Pressable>
+              }
             />
             <Pressable 
               className="items-end mt-1"
@@ -64,9 +99,14 @@ export default function LoginScreen() {
 
           <Button 
             className="h-16 w-full rounded-2xl mt-4" 
-            onPress={() => router.replace('/(tabs)')}
+            onPress={handleLogin}
+            disabled={isLoading || !email || !password}
           >
-            <Text className="font-inter-bold text-lg uppercase">Masuk Sekarang</Text>
+            {isLoading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text className="font-inter-bold text-lg uppercase text-white">Masuk Sekarang</Text>
+            )}
           </Button>
         </View>
 
@@ -83,6 +123,7 @@ export default function LoginScreen() {
           </Text>
         </View>
       </View>
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

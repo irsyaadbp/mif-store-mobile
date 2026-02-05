@@ -3,10 +3,13 @@ import '@/global.css';
 import { NAV_THEME } from '@/lib/theme';
 import { ThemeProvider } from '@react-navigation/native';
 import { PortalHost } from '@rn-primitives/portal';
+import { AuthProvider } from '@/context/AuthContext';
 import { CartProvider } from '@/context/CartContext';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'nativewind';
+import { Pressable } from 'react-native';
+import { ArrowLeft } from 'lucide-react-native';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -54,21 +57,59 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <ThemeProvider value={NAV_THEME[colorScheme ?? 'light']}>
-        <ToastProvider>
-          <CartProvider>
-            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+        <AuthProvider>
+          <ToastProvider>
+            <CartProvider>
+              <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
             <Stack>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="checkout" options={{ headerShown: false }} />
               <Stack.Screen name="product-details/[id]" options={{ headerShown: false }} />
-              <Stack.Screen name="login" options={{ headerShown: false }} />
-              <Stack.Screen name="register" options={{ headerShown: false }} />
-              <Stack.Screen name="forgot-password" options={{ headerShown: false }} />
+              <Stack.Screen 
+                name="login" 
+                options={{ 
+                  headerShown: true,
+                  headerTransparent: true,
+                  headerTitle: '',
+                  headerLeft: () => (
+                    <Pressable onPress={() => router.replace('/(tabs)')} className="ml-4 h-10 w-10 items-center justify-center rounded-full bg-background/80 shadow-sm border border-border">
+                      <ArrowLeft size={24} color={colorScheme === 'dark' ? '#fff' : '#000'} />
+                    </Pressable>
+                  ),
+                }} 
+              />
+              <Stack.Screen 
+                name="register" 
+                options={{ 
+                  headerShown: true,
+                  headerTransparent: true,
+                  headerTitle: '',
+                  headerLeft: () => (
+                    <Pressable onPress={() => router.back()} className="ml-4 h-10 w-10 items-center justify-center rounded-full bg-background/80 shadow-sm border border-border">
+                      <ArrowLeft size={24} color={colorScheme === 'dark' ? '#fff' : '#000'} />
+                    </Pressable>
+                  ),
+                }} 
+              />
+              <Stack.Screen 
+                name="forgot-password" 
+                options={{ 
+                  headerShown: true,
+                  headerTransparent: true,
+                  headerTitle: '',
+                  headerLeft: () => (
+                    <Pressable onPress={() => router.back()} className="ml-4 h-10 w-10 items-center justify-center rounded-full bg-background/80 shadow-sm border border-border">
+                      <ArrowLeft size={24} color={colorScheme === 'dark' ? '#fff' : '#000'} />
+                    </Pressable>
+                  ),
+                }} 
+              />
             </Stack>
             <PortalHost />
             <ToastContainer />
           </CartProvider>
         </ToastProvider>
+        </AuthProvider>
       </ThemeProvider>
     </SafeAreaProvider>
   );

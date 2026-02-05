@@ -5,10 +5,11 @@ import { Icon } from './icon';
 
 export interface InputProps extends TextInputProps {
   icon?: React.ComponentType<{ size?: number; color?: string }>;
+  rightElement?: React.ReactNode;
 }
 
 const Input = React.forwardRef<TextInput, InputProps>(
-  ({ className, icon: IconComponent, ...props }, ref) => {
+  ({ className, icon: IconComponent, rightElement, ...props }, ref) => {
     return (
       <View
         className={cn(
@@ -28,6 +29,11 @@ const Input = React.forwardRef<TextInput, InputProps>(
           autoCapitalize="none"
           {...props}
         />
+        {rightElement && (
+          <View className="ml-2">
+            {rightElement}
+          </View>
+        )}
       </View>
     );
   }
