@@ -3,7 +3,7 @@ import { ScrollView, View, Pressable } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { ProductCard } from '@/components/ProductCard';
 import { PageTitle } from '@/components/PageTitle';
-import { LayoutGrid, Tv, Layers } from 'lucide-react-native';
+import { LayoutGrid, Tv, Layers, BookOpen, Wrench, Gamepad2 } from 'lucide-react-native';
 import { cn } from '@/lib/utils';
 
 const DUMMY_PRODUCTS = [
@@ -51,6 +51,33 @@ const DUMMY_PRODUCTS = [
     "stock": 10,
     "imageUrl": "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/9d2b8def-7b8d-4476-800d-597e3fcb5f07/dftx2j7-b924eb9e-1b99-4574-b7b7-ab481550c7fc.jpg/v1/fit/w_400,h_400,q_70,strp/capcut_logo_render_by_ijungakrom_dftx2j7-375w-2x.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9NDAwIiwicGF0aCI6Ii9mLzlkMmI4ZGVmLTdiOGQtNDQ3Ni04MDBkLTU5N2UzZmNiNWYwNy9kZnR4Mmo3LWI5MjRlYjllLTFiOTktNDU3NC1iN2I3LWFiNDgxNTUwYzdmYy5qcGciLCJ3aWR0aCI6Ijw9NDAwIn1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmltYWdlLm9wZXJhdGlvbnMiXX0.xXE-DZNjmNghKlc9ZhpTM83Pwew3lRe_5gyveag3Kvc",
     "category": "editing",
+  },
+  {
+    "_id": { "$oid": "696406e5c570f2dcb2f1df7a" },
+    "name": "Duolingo Super",
+    "description": "Belajar bahasa dengan lebih efektif tanpa iklan",
+    "price": 15000,
+    "stock": 25,
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Duolingo_logo_%282019%29.svg/1200px-Duolingo_logo_%282019%29.svg.png",
+    "category": "education",
+  },
+  {
+    "_id": { "$oid": "696407e5c570f2dcb2f1df82" },
+    "name": "NordVPN",
+    "description": "Layanan VPN terbaik untuk keamanan internet Anda",
+    "price": 45000,
+    "stock": 15,
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/NordVPN_logo.svg/1200px-NordVPN_logo.svg.png",
+    "category": "utilities",
+  },
+  {
+    "_id": { "$oid": "696408e5c570f2dcb2f1df8a" },
+    "name": "Genshin Impact",
+    "description": "Top up Genesis Crystals dengan harga termurah",
+    "price": 100000,
+    "stock": 50,
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/id/f/f6/Genshin_Impact_logo.png",
+    "category": "gaming",
   }
 ];
 
@@ -58,6 +85,9 @@ const CATEGORIES = [
   { id: 'all', label: 'Semua', icon: LayoutGrid },
   { id: 'streaming', label: 'Streaming & Hiburan', icon: Tv },
   { id: 'editing', label: 'Desain & Editing', icon: Layers },
+  { id: 'education', label: 'Edukasi', icon: BookOpen },
+  { id: 'utilities', label: 'Utilitas', icon: Wrench },
+  { id: 'gaming', label: 'Gaming', icon: Gamepad2 },
 ];
 
 export default function ProdukScreen() {
