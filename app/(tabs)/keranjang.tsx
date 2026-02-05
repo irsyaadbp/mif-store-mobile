@@ -26,11 +26,11 @@ export default function KeranjangScreen() {
           <View className="pb-12">
             {cartItems.map((item) => (
               <CartItem
-                key={item._id.$oid}
+                key={item._id}
                 product={item as any}
                 quantity={item.quantity}
-                onUpdateQuantity={(q: number) => updateQuantity(item._id.$oid, q)}
-                onRemove={() => removeFromCart(item._id.$oid)}
+                onUpdateQuantity={(q: number) => updateQuantity(item._id, q)}
+                onRemove={() => removeFromCart(item._id)}
               />
             ))}
 
@@ -70,7 +70,7 @@ export default function KeranjangScreen() {
               <Text className="font-bold text-primary-foreground">Checkout</Text>
             </Button>
           </View>
-          <Text className="text-center text-xs text-muted-foreground opacity-40 mt-4">
+          <Text className="mt-4 text-center text-xs text-muted-foreground opacity-40">
             Login diperlukan saat melakukan pembayaran
           </Text>
         </View>

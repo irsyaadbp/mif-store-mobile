@@ -1,14 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Product } from '@/service/products';
 
-export interface Product {
-  _id: { $oid: string };
-  name: string;
-  description: string;
-  price: number;
-  imageUrl: string;
-  category: string;
-}
 
 export interface CartItem extends Product {
   quantity: number;

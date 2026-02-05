@@ -5,38 +5,12 @@ import { useToast } from '@/context/ToastContext';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ArrowLeft, Minus, Plus } from 'lucide-react-native';
 import * as React from 'react';
-import { View, ScrollView, Image, Pressable, Dimensions } from 'react-native';
+import { View, ScrollView, Image, Pressable, Dimensions, ActivityIndicator, RefreshControl } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAsyncFetch } from '@/hooks/useAsyncFetch';
+import { ProductService } from '@/service/products';
 
 const { width } = Dimensions.get('window');
-
-const DUMMY_PRODUCTS = [
-  // ... (keep dummy products)
-  {
-    "_id": { "$oid": "6963fca6605db1b0f8e6a553" },
-    "name": "Netflix Premium",
-    "description": "Nonton film 4K sepuasnya tanpa iklan dengan kualitas terbaik. Nikmati ribuan film dan serial TV populer di seluruh perangkat Anda.",
-    "price": 35000,
-    "imageUrl": "https://images.ctfassets.net/4cd45et68cgf/Rx83JoRDMkYNlMC9MKzcB/2b14d5a59fc3937afd3f03191e19502d/Netflix-Symbol.png?w=700&h=456",
-    "category": "Streaming & Hiburan"
-  },
-  {
-    "_id": { "$oid": "6963ff5c605db1b0f8e6a570" },
-    "name": "Vidio Premium",
-    "description": "Akses konten eksklusif Vidio, live sports, dan film Indonesia terbaik kapan saja dan di mana saja.",
-    "price": 20000,
-    "imageUrl": "https://images.seeklogo.com/logo-png/39/2/vidio-logo-png_seeklogo-395091.png",
-    "category": "Streaming & Hiburan"
-  },
-  {
-    "_id": { "$oid": "6963fdb2605db1b0f8e6a55c" },
-    "name": "Spotify Premium",
-    "description": "Dengarkan musik tanpa batas, offline, dan tanpa jeda iklan di Spotify. Rasakan kualitas suara premium.",
-    "price": 25000,
-    "imageUrl": "https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Green.png",
-    "category": "Streaming & Hiburan"
-  }
-];
 
 export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -45,13 +19,37 @@ export default function ProductDetailScreen() {
   const { addToCart } = useCart();
   const { showToast } = useToast();
   
-  // Find product from dummy data based on ID
-  const product = DUMMY_PRODUCTS.find(p => p._id.$oid === id);
+  const getProduct = React.useCallback(() => 
+    ProductService.getProductById(id as string), 
+  [id]);
+
+  const { data: product, isLoading, execute } = useAsyncFetch(
+    getProduct,
+    {
+      onError: () => showToast('Gagal memuat detail produk', 'error'),
+    }
+  );
+
+  if (isLoading && !product) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white">
+        <ActivityIndicator size="large" color="#FF8C00" />
+        <Text className="mt-4 text-muted-foreground">Memuat detail produk...</Text>
+      </View>
+    );
+  }
 
   if (!product) {
     return (
-      <View className="flex-1 items-center justify-center">
-        <Text>Product not found</Text>
+      <View className="flex-1 items-center justify-center bg-white p-6">
+        <Text className="text-xl font-bold text-center">Produk tidak ditemukan</Text>
+        <Button 
+          variant="outline" 
+          className="mt-6 rounded-2xl px-10 border-secondary"
+          onPress={() => router.back()}
+        >
+          <Text className="font-bold text-secondary">Kembali</Text>
+        </Button>
       </View>
     );
   }
@@ -63,19 +61,19 @@ export default function ProductDetailScreen() {
   }).format(product.price);
 
   const handleAddToCart = () => {
-    addToCart(product, qty);
+    addToCart(product as any, qty);
     showToast('Berhasil menambahkan keranjang', 'success');
   };
 
   const handleBuyNow = () => {
-    addToCart(product, qty);
+    addToCart(product as any, qty);
     showToast('Berhasil menambahkan keranjang', 'success');
     router.push('/checkout');
   };
 
   return (
     <View className="flex-1 bg-white">
-      {/* ... previous header and scrollview content ... */}
+      {/* Header Back Button */}
       <View 
         style={{ paddingTop: insets.top }}
         className="px-4 pb-4 absolute top-0 left-0 right-0 z-10 flex-row items-center"
@@ -88,10 +86,26 @@ export default function ProductDetailScreen() {
         </Pressable>
       </View>
 
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        className="flex-1" 
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={isLoading} onRefresh={execute} colors={['#FF8C00']} />
+        }
+      >
         {/* Product Image */}
         <View className="bg-muted" style={{ height: width }}>
-          <Image source={{ uri: product.imageUrl }} className="h-full w-full" resizeMode="contain" />
+          <Image 
+            source={{ 
+              uri: product.imageUrl,
+              headers: {
+                Accept: 'image/*',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+              }
+            }} 
+            className="h-full w-full" 
+            resizeMode="cover" 
+          />
         </View>
 
         {/* Product Info */}
@@ -103,7 +117,8 @@ export default function ProductDetailScreen() {
             <Text className="text-2xl font-inter-bold text-primary">
               {formattedPrice.replace('Rp', 'Rp ')}
             </Text>
-            <View className="h-[1px] bg-border my-2" />
+            <View className="h-[1px] bg-border my-4" />
+            <Text className="text-lg font-inter-semibold text-foreground">Deskripsi</Text>
             <Text className="text-base text-muted-foreground leading-6">
               {product.description}
             </Text>
@@ -115,8 +130,8 @@ export default function ProductDetailScreen() {
       <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-border p-6 shadow-2xl gap-6">
         {/* Quantity Selector Row */}
         <View className="flex-row items-center justify-between">
-          <Text className="text-lg font-inter-bold text-foreground">Quantity</Text>
-          <View className="flex-row items-center gap-1">
+          <Text className="text-lg font-inter-bold text-foreground">Kuantitas</Text>
+          <View className="flex-row items-center gap-2">
             <Pressable 
               className="h-10 w-10 rounded-xl border border-border items-center justify-center active:bg-muted"
               onPress={() => setQty(Math.max(1, qty - 1))}
@@ -124,7 +139,7 @@ export default function ProductDetailScreen() {
               <Minus size={20} color="#000" />
             </Pressable>
             
-            <View className="h-10 px-6 rounded-xl border border-border items-center justify-center">
+            <View className="h-10 min-w-[50px] px-2 rounded-xl border border-border items-center justify-center">
               <Text className="text-lg font-inter-bold">{qty}</Text>
             </View>
 

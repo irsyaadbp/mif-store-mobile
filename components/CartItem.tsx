@@ -1,16 +1,9 @@
 import React from 'react';
 import { View, Image, Pressable } from 'react-native';
 import { Text } from '@/components/ui/text';
-import { Button } from '@/components/ui/button';
-import { Minus, Plus, Trash2 } from 'lucide-react-native';
-import { cn } from '@/lib/utils';
 
-interface Product {
-  _id: { $oid: string };
-  name: string;
-  price: number;
-  imageUrl: string;
-}
+import { Minus, Plus, Trash2 } from 'lucide-react-native';
+import type { Product } from '@/service/products';
 
 interface CartItemProps {
   product: Product;
@@ -29,14 +22,11 @@ export function CartItem({ product, quantity, onUpdateQuantity, onRemove }: Cart
   return (
     <View className="relative mb-4 flex-row items-center justify-between rounded-3xl border border-border bg-white p-4 shadow-sm">
       {/* Trash Icon at Top Right */}
-      <Pressable 
-        onPress={onRemove}
-        className="absolute top-4 right-4 z-10 p-1 active:opacity-50"
-      >
+      <Pressable onPress={onRemove} className="absolute right-4 top-4 z-10 p-1 active:opacity-50">
         <Trash2 size={20} color="#ef4444" />
       </Pressable>
 
-      <View className="flex-row items-center flex-1 gap-4">
+      <View className="flex-1 flex-row items-center gap-4">
         {/* Image */}
         <View className="h-20 w-20 overflow-hidden rounded-2xl bg-muted">
           <Image source={{ uri: product.imageUrl }} className="h-full w-full" resizeMode="cover" />
@@ -47,22 +37,20 @@ export function CartItem({ product, quantity, onUpdateQuantity, onRemove }: Cart
           <Text className="text-lg font-bold text-foreground" numberOfLines={1}>
             {product.name}
           </Text>
-          
+
           <View className="flex-row items-center gap-3">
             <View className="flex-row items-center rounded-xl border border-border bg-muted/50">
-              <Pressable 
+              <Pressable
                 onPress={() => onUpdateQuantity(Math.max(1, quantity - 1))}
-                className="p-2 active:opacity-50"
-              >
+                className="p-2 active:opacity-50">
                 <Minus size={16} color="#000" />
               </Pressable>
-              
+
               <Text className="w-8 text-center font-bold">{quantity}</Text>
-              
-              <Pressable 
+
+              <Pressable
                 onPress={() => onUpdateQuantity(quantity + 1)}
-                className="p-2 active:opacity-50"
-              >
+                className="p-2 active:opacity-50">
                 <Plus size={16} color="#000" />
               </Pressable>
             </View>
@@ -71,7 +59,7 @@ export function CartItem({ product, quantity, onUpdateQuantity, onRemove }: Cart
       </View>
 
       {/* Price */}
-      <View className="items-end justify-end mt-auto">
+      <View className="mt-auto items-end justify-end">
         <Text className="text-lg font-bold text-foreground">
           {formattedPrice.replace('Rp', 'Rp ')}
         </Text>

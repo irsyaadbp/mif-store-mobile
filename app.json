@@ -21,6 +21,7 @@
     },
     "android": {
       "edgeToEdgeEnabled": true,
+      "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/fox.png",
         "backgroundColor": "#ffffff"
