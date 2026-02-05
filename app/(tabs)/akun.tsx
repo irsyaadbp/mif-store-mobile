@@ -1,14 +1,15 @@
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
-import { PageTitle } from '@/components/PageTitle';
 import { router } from 'expo-router';
 import { View, ScrollView } from 'react-native';
 import { useAuth } from '@/context/AuthContext';
-import { LogOut, User, Mail } from 'lucide-react-native';
+import { useCart } from '@/context/CartContext';
+import { LogOut } from 'lucide-react-native';
 import React from 'react';
 
 export default function AkunScreen() {
   const { user, logout, isAuthenticated, isLoading } = useAuth();
+  const { clearCart } = useCart();
 
   React.useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -17,6 +18,7 @@ export default function AkunScreen() {
   }, [isLoading, isAuthenticated]);
 
   const handleLogout = async () => {
+    clearCart();
     await logout();
     router.replace('/login');
   };

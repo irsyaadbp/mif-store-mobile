@@ -2,38 +2,45 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
 import { PageTitle } from '@/components/PageTitle';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
 import * as React from 'react';
 import { View, ScrollView, Image, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
-
-const DUMMY_CART = [
-  {
-    product: {
-      "_id": { "$oid": "6963ff5c605db1b0f8e6a570" },
-      "name": "Vidio Premium",
-      "price": 20000,
-      "imageUrl": "https://images.seeklogo.com/logo-png/39/2/vidio-logo-png_seeklogo-395091.png",
-    },
-    quantity: 3,
-  }
-];
-
 import { useAuth } from '@/context/AuthContext';
+import { useCart } from '@/context/CartContext';
 
 export default function CheckoutScreen() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const { cartItems } = useCart();
+  const { buyNowItem } = useLocalSearchParams();
+  
   const [name, setName] = React.useState('');
   const [address, setAddress] = React.useState('');
   const [notes, setNotes] = React.useState('');
 
+  const checkoutItems = React.useMemo(() => {
+    if (buyNowItem) {
+      try {
+        const item = JSON.parse(buyNowItem as string);
+        return [item];
+      } catch (e) {
+        console.error('Failed to parse buyNowItem', e);
+        return [];
+      }
+    }
+    return cartItems.map(item => ({
+      product: item,
+      quantity: item.quantity
+    }));
+  }, [buyNowItem, cartItems]);
+
   React.useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!isAuthLoading && !isAuthenticated) {
       router.replace('/login');
     }
-  }, [isLoading, isAuthenticated]);
+  }, [isAuthLoading, isAuthenticated]);
 
-  const subtotal = DUMMY_CART.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const subtotal = checkoutItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const serviceFee = 5000;
   const total = subtotal + serviceFee;
 
@@ -113,8 +120,8 @@ export default function CheckoutScreen() {
 
               {/* Item List */}
               <View className="gap-4 mb-6">
-                {DUMMY_CART.map((item) => (
-                  <View key={item.product._id.$oid} className="flex-row items-center justify-between py-3 border-b border-border/50">
+                {checkoutItems.map((item: any) => (
+                  <View key={item.product._id?.$oid || item.product._id} className="flex-row items-center justify-between py-3 border-b border-border/50">
                     <View className="flex-row items-center gap-3">
                       <View className="h-12 w-12 rounded-xl bg-muted overflow-hidden">
                         <Image source={{ uri: item.product.imageUrl }} className="h-full w-full" resizeMode="cover" />

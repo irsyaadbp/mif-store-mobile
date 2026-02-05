@@ -54,32 +54,46 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const addToCart = (product: Product, quantity: number) => {
     setCartItems((prevItems) => {
-      const existingItem = prevItems.find((item) => item._id.$oid === product._id.$oid);
+      // Helper to consistently get string ID
+      const getID = (p: any) => (typeof p === 'object' && p?._id ? (p._id?.$oid || p._id) : p);
+      const targetId = getID(product);
+      
+      const existingItem = prevItems.find((item) => getID(item) === targetId);
+      
       if (existingItem) {
         return prevItems.map((item) =>
-          item._id.$oid === product._id.$oid
+          getID(item) === targetId
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       }
-      return [...prevItems, { ...product, quantity }];
+      
+      // When adding new, ensure the ID in the cart is a flat string
+      const normalizedProduct = { ...product, _id: targetId };
+      return [...prevItems, { ...normalizedProduct, quantity }];
     });
   };
 
-  const removeFromCart = (productId: string) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item._id.$oid !== productId));
+  const removeFromCart = (productId: any) => {
+    setCartItems((prevItems) => {
+      const getID = (p: any) => (typeof p === 'object' && p?._id ? (p._id?.$oid || p._id) : (p?.$oid || p));
+      const targetId = getID(productId);
+      return prevItems.filter((item) => getID(item) !== targetId);
+    });
   };
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = (productId: any, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(productId);
       return;
     }
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item._id.$oid === productId ? { ...item, quantity } : item
-      )
-    );
+    setCartItems((prevItems) => {
+      const getID = (p: any) => (typeof p === 'object' && p?._id ? (p._id?.$oid || p._id) : (p?.$oid || p));
+      const targetId = getID(productId);
+      return prevItems.map((item) =>
+        getID(item) === targetId ? { ...item, quantity } : item
+      );
+    });
   };
 
   const clearCart = () => {

@@ -73,9 +73,11 @@ export default function ProductDetailScreen() {
   };
 
   const handleBuyNow = () => {
-    addToCart(product as any, qty);
-    showToast('Berhasil menambahkan keranjang', 'success');
-    router.push('/checkout');
+    const item = { product, quantity: qty };
+    router.push({
+      pathname: '/checkout',
+      params: { buyNowItem: JSON.stringify(item) }
+    });
   };
 
   return (

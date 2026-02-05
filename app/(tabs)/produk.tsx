@@ -73,7 +73,7 @@ export default function ProdukScreen() {
                 >
                   <Icon 
                     size={28} 
-                    color={isActive ? "#000000" : "#71717a"} 
+                    color={isActive ? "#fff" : "#71717a"} 
                     strokeWidth={isActive ? 2.5 : 2}
                   />
                 </View>
