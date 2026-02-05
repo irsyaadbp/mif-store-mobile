@@ -1,8 +1,9 @@
-import React from 'react';
-import { View, Image, Dimensions } from 'react-native';
-import { Text } from '@/components/ui/text';
 import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
+import { router } from 'expo-router';
+import React from 'react';
+import { View, Image, Dimensions, Pressable } from 'react-native';
 
 interface Product {
   _id: { $oid: string };
@@ -31,7 +32,11 @@ export function ProductCard({ product, variant = 'full', className }: ProductCar
   // Horizontal variant for the horizontal scroll section
   if (variant === 'horizontal') {
     return (
-      <View 
+      <Pressable 
+        onPress={() => {
+          // @ts-ignore - Dynamic route indexing lag
+          router.push({ pathname: "/product-details/[id]", params: { id: product._id.$oid } });
+        }}
         className={cn("overflow-hidden rounded-3xl border border-border bg-white shadow-sm", className)}
         style={{ width: width * 0.7 }}
       >
@@ -46,14 +51,20 @@ export function ProductCard({ product, variant = 'full', className }: ProductCar
             {formattedPrice.replace('Rp', 'Rp ')}
           </Text>
         </View>
-      </View>
+      </Pressable>
     );
   }
 
   // Grid variant for the 2-column grid section
   if (variant === 'grid') {
     return (
-      <View className={cn("overflow-hidden rounded-3xl border border-border bg-white shadow-sm", className)}>
+      <Pressable 
+        onPress={() => {
+          // @ts-ignore - Dynamic route indexing lag
+          router.push({ pathname: "/product-details/[id]", params: { id: product._id.$oid } });
+        }}
+        className={cn("overflow-hidden rounded-3xl border border-border bg-white shadow-sm", className)}
+      >
         <View className="h-32 w-full bg-muted">
           <Image source={{ uri: product.imageUrl }} className="h-full w-full" resizeMode="cover" />
         </View>
@@ -69,21 +80,36 @@ export function ProductCard({ product, variant = 'full', className }: ProductCar
           
           {/* Vertical Buttons for Grid */}
           <View className="gap-2 mt-1">
-            <Button variant="outline" size="sm" className="h-9 rounded-xl border-secondary">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-9 rounded-xl border-secondary"
+              // Detail button also navigates but doesn't block the card tap if pressed directly
+              onPress={() => {
+                // @ts-ignore - Dynamic route indexing lag
+                router.push({ pathname: "/product-details/[id]", params: { id: product._id.$oid } });
+              }}
+            >
               <Text className="text-xs font-bold text-secondary">Detail</Text>
             </Button>
-            <Button variant="default" size="sm" className="h-9 rounded-xl">
+            <Button variant="default" size="sm" className="h-9 rounded-xl" onPress={() => {}}>
               <Text className="text-xs font-bold">+ Keranjang</Text>
             </Button>
           </View>
         </View>
-      </View>
+      </Pressable>
     );
   }
 
   // Default Full-width variant
   return (
-    <View className={cn("mb-4 overflow-hidden rounded-3xl border border-border bg-white shadow-sm", className)}>
+    <Pressable 
+      onPress={() => {
+        // @ts-ignore - Dynamic route indexing lag
+        router.push({ pathname: "/product-details/[id]", params: { id: product._id.$oid } });
+      }}
+      className={cn("mb-4 overflow-hidden rounded-3xl border border-border bg-white shadow-sm", className)}
+    >
       {/* Image Container */}
       <View className="relative h-48 w-full bg-muted">
         <Image source={{ uri: product.imageUrl }} className="h-full w-full" resizeMode="cover" />
@@ -100,14 +126,21 @@ export function ProductCard({ product, variant = 'full', className }: ProductCar
 
         {/* Responsive Action Buttons: Column on mobile (stacked) */}
         <View className="flex-col gap-2 pt-2">
-          <Button className="h-12 w-full rounded-2xl border-secondary" variant="outline">
+          <Button 
+            className="h-12 w-full rounded-2xl border-secondary" 
+            variant="outline"
+            onPress={() => {
+              // @ts-ignore - Dynamic route indexing lag
+              router.push({ pathname: "/product-details/[id]", params: { id: product._id.$oid } });
+            }}
+          >
             <Text className="font-bold text-secondary">Lihat Detail</Text>
           </Button>
-          <Button className="h-12 w-full rounded-2xl" variant="default">
+          <Button className="h-12 w-full rounded-2xl" variant="default" onPress={() => {}}>
             <Text className="font-bold">+ Keranjang</Text>
           </Button>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
