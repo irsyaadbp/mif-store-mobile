@@ -1,5 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
+import { useCart } from '@/context/CartContext';
+import { useToast } from '@/context/ToastContext';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ArrowLeft, Minus, Plus } from 'lucide-react-native';
 import * as React from 'react';
@@ -40,9 +42,19 @@ export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
   const [qty, setQty] = React.useState(1);
   const insets = useSafeAreaInsets();
+  const { addToCart } = useCart();
+  const { showToast } = useToast();
   
   // Find product from dummy data based on ID
-  const product = DUMMY_PRODUCTS.find(p => p._id.$oid === id) || DUMMY_PRODUCTS[0];
+  const product = DUMMY_PRODUCTS.find(p => p._id.$oid === id);
+
+  if (!product) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <Text>Product not found</Text>
+      </View>
+    );
+  }
 
   const formattedPrice = new Intl.NumberFormat('id-ID', {
     style: 'currency',
@@ -50,9 +62,20 @@ export default function ProductDetailScreen() {
     minimumFractionDigits: 0,
   }).format(product.price);
 
+  const handleAddToCart = () => {
+    addToCart(product, qty);
+    showToast('Berhasil menambahkan keranjang', 'success');
+  };
+
+  const handleBuyNow = () => {
+    addToCart(product, qty);
+    showToast('Berhasil menambahkan keranjang', 'success');
+    router.push('/checkout');
+  };
+
   return (
     <View className="flex-1 bg-white">
-      {/* Custom Header */}
+      {/* ... previous header and scrollview content ... */}
       <View 
         style={{ paddingTop: insets.top }}
         className="px-4 pb-4 absolute top-0 left-0 right-0 z-10 flex-row items-center"
@@ -119,14 +142,14 @@ export default function ProductDetailScreen() {
           <Button 
             variant="outline" 
             className="h-14 flex-1 rounded-2xl border-secondary"
-            onPress={() => {}}
+            onPress={handleAddToCart}
           >
             <Text className="font-inter-bold text-secondary">+ Keranjang</Text>
           </Button>
           <Button 
             variant="default" 
             className="h-14 flex-1 rounded-2xl"
-            onPress={() => {}}
+            onPress={handleBuyNow}
           >
             <Text className="font-inter-bold text-primary-foreground">Beli Sekarang</Text>
           </Button>

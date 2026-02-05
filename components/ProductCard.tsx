@@ -4,6 +4,8 @@ import { cn } from '@/lib/utils';
 import { router } from 'expo-router';
 import React from 'react';
 import { View, Image, Dimensions, Pressable } from 'react-native';
+import { useCart } from '@/context/CartContext';
+import { useToast } from '@/context/ToastContext';
 
 interface Product {
   _id: { $oid: string };
@@ -23,6 +25,9 @@ interface ProductCardProps {
 const { width } = Dimensions.get('window');
 
 export function ProductCard({ product, variant = 'full', className }: ProductCardProps) {
+  const { addToCart } = useCart();
+  const { showToast } = useToast();
+  
   const formattedPrice = new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',
@@ -92,7 +97,15 @@ export function ProductCard({ product, variant = 'full', className }: ProductCar
             >
               <Text className="text-xs font-bold text-secondary">Detail</Text>
             </Button>
-            <Button variant="default" size="sm" className="h-9 rounded-xl" onPress={() => {}}>
+            <Button 
+              variant="default" 
+              size="sm" 
+              className="h-9 rounded-xl" 
+              onPress={() => {
+                addToCart(product, 1);
+                showToast('Berhasil menambahkan keranjang', 'success');
+              }}
+            >
               <Text className="text-xs font-bold">+ Keranjang</Text>
             </Button>
           </View>
@@ -136,7 +149,14 @@ export function ProductCard({ product, variant = 'full', className }: ProductCar
           >
             <Text className="font-bold text-secondary">Lihat Detail</Text>
           </Button>
-          <Button className="h-12 w-full rounded-2xl" variant="default" onPress={() => {}}>
+          <Button 
+            className="h-12 w-full rounded-2xl" 
+            variant="default" 
+            onPress={() => {
+              addToCart(product, 1);
+              showToast('Berhasil menambahkan keranjang', 'success');
+            }}
+          >
             <Text className="font-bold">+ Keranjang</Text>
           </Button>
         </View>

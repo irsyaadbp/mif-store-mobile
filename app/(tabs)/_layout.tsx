@@ -3,9 +3,13 @@ import { Home, Package, ShoppingCart, User } from 'lucide-react-native';
 import { Icon } from '@/components/ui/icon';
 import { useColorScheme } from 'nativewind';
 import { NAV_THEME } from '@/lib/theme';
+import { useCart } from '@/context/CartContext';
 
 export default function TabLayout() {
   const { colorScheme } = useColorScheme();
+  const { cartItems } = useCart();
+  
+  const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
     <Tabs
@@ -33,6 +37,12 @@ export default function TabLayout() {
         options={{
           title: 'Keranjang',
           tabBarIcon: ({ color }) => <Icon as={ShoppingCart} color={color} />,
+          tabBarBadge: totalItems > 0 ? totalItems : undefined,
+          tabBarBadgeStyle: {
+            backgroundColor: NAV_THEME[colorScheme ?? 'light']?.colors?.primary,
+            color: 'white',
+            fontSize: 10,
+          }
         }}
       />
       <Tabs.Screen

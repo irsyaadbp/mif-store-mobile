@@ -6,105 +6,16 @@ import { PageTitle } from '@/components/PageTitle';
 import { CartItem } from '@/components/CartItem';
 import { router } from 'expo-router';
 
-const INITIAL_CART = [
-  {
-    product: {
-      _id: { $oid: '6963ff5c605db1b0f8e6a570' },
-      name: 'Vidio Premium',
-      price: 20000,
-      imageUrl: 'https://images.seeklogo.com/logo-png/39/2/vidio-logo-png_seeklogo-395091.png',
-    },
-    quantity: 3,
-  },
-  {
-    product: {
-      _id: { $oid: '6963ff5c605db1b0f8e6a571120' },
-      name: 'Vidio Premium',
-      price: 20000,
-      imageUrl: 'https://images.seeklogo.com/logo-png/39/2/vidio-logo-png_seeklogo-395091.png',
-    },
-    quantity: 3,
-  },
-  {
-    product: {
-      _id: { $oid: '6963ff5c605db1b0f8e6a5670' },
-      name: 'Vidio Premium',
-      price: 20000,
-      imageUrl: 'https://images.seeklogo.com/logo-png/39/2/vidio-logo-png_seeklogo-395091.png',
-    },
-    quantity: 3,
-  },
-  {
-    product: {
-      _id: { $oid: '6963ff5c605db1b0f8e6a5750' },
-      name: 'Vidio Premium',
-      price: 20000,
-      imageUrl: 'https://images.seeklogo.com/logo-png/39/2/vidio-logo-png_seeklogo-395091.png',
-    },
-    quantity: 3,
-  },
-  {
-    product: {
-      _id: { $oid: '6963ff5c605db1b0f8e6a5740' },
-      name: 'Vidio Premium',
-      price: 20000,
-      imageUrl: 'https://images.seeklogo.com/logo-png/39/2/vidio-logo-png_seeklogo-395091.png',
-    },
-    quantity: 3,
-  },
-  {
-    product: {
-      _id: { $oid: '6963ff5c605db1b0f8e6a5703' },
-      name: 'Vidio Premium',
-      price: 20000,
-      imageUrl: 'https://images.seeklogo.com/logo-png/39/2/vidio-logo-png_seeklogo-395091.png',
-    },
-    quantity: 3,
-  },
-  {
-    product: {
-      _id: { $oid: '6963ff5c605db1b0f8e6a5702' },
-      name: 'Vidio Premium',
-      price: 20000,
-      imageUrl: 'https://images.seeklogo.com/logo-png/39/2/vidio-logo-png_seeklogo-395091.png',
-    },
-    quantity: 3,
-  },
-  {
-    product: {
-      _id: { $oid: '6963ff5c605db1b0f8e6a5701' },
-      name: 'Vidio Premium',
-      price: 20000,
-      imageUrl: 'https://images.seeklogo.com/logo-png/39/2/vidio-logo-png_seeklogo-395091.png',
-    },
-    quantity: 3,
-  },
-];
+import { useCart } from '@/context/CartContext';
 
 export default function KeranjangScreen() {
-  const [cart, setCart] = useState(INITIAL_CART);
-
-  const total = useMemo(() => {
-    return cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-  }, [cart]);
-
-  const updateQuantity = (productId: string, newQty: number) => {
-    setCart((prev) =>
-      prev.map((item) =>
-        item.product._id.$oid === productId ? { ...item, quantity: newQty } : item
-      )
-    );
-  };
-
-  const removeItem = (productId: string) => {
-    setCart((prev) => prev.filter((item) => item.product._id.$oid !== productId));
-  };
+  const { cartItems, updateQuantity, removeFromCart, totalAmount } = useCart();
 
   const formattedTotal = new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',
     minimumFractionDigits: 0,
-  }).format(total);
+  }).format(totalAmount);
 
   return (
     <View className="flex-1 bg-background">
@@ -113,17 +24,17 @@ export default function KeranjangScreen() {
           <PageTitle title="Keranjang" subtitle="Ringkasan produk yang akan kamu checkout." />
 
           <View className="pb-12">
-            {cart.map((item) => (
+            {cartItems.map((item) => (
               <CartItem
-                key={item.product._id.$oid}
-                product={item.product as any}
+                key={item._id.$oid}
+                product={item as any}
                 quantity={item.quantity}
-                onUpdateQuantity={(q: number) => updateQuantity(item.product._id.$oid, q)}
-                onRemove={() => removeItem(item.product._id.$oid)}
+                onUpdateQuantity={(q: number) => updateQuantity(item._id.$oid, q)}
+                onRemove={() => removeFromCart(item._id.$oid)}
               />
             ))}
 
-            {cart.length === 0 && (
+            {cartItems.length === 0 && (
               <View className="items-center gap-4 py-20">
                 <Text className="text-muted-foreground">Keranjangmu masih kosong.</Text>
                 <Button variant="secondary" onPress={() => router.push('/produk')}>
@@ -136,7 +47,7 @@ export default function KeranjangScreen() {
       </ScrollView>
 
       {/* Sticky Footer */}
-      {cart.length > 0 && (
+      {cartItems.length > 0 && (
         <View className="absolute bottom-0 left-0 right-0 border-t border-border bg-white px-6 py-4 shadow-2xl">
           <View className="mb-6 flex-row items-center justify-between">
             <Text className="text-xl font-bold text-foreground">Total</Text>
