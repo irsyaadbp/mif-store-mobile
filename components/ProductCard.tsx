@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
 import { router } from 'expo-router';
+import { CameraOff } from 'lucide-react-native';
 import React from 'react';
 import { View, Image, Dimensions, Pressable } from 'react-native';
 import { useCart } from '@/context/CartContext';
@@ -19,6 +20,16 @@ const { width } = Dimensions.get('window');
 export function ProductCard({ product, variant = 'full', className }: ProductCardProps) {
   const { addToCart } = useCart();
   const { showToast } = useToast();
+  const [imgError, setImgError] = React.useState(false);
+
+  const imageSource = {
+    uri: product.imageUrl,
+    headers: {
+      Accept: 'image/*',
+      'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+    },
+  };
 
   const formattedPrice = new Intl.NumberFormat('id-ID', {
     style: 'currency',
@@ -38,14 +49,17 @@ export function ProductCard({ product, variant = 'full', className }: ProductCar
           className
         )}
         style={{ width: width * 0.7 }}>
-        <View className="h-40 w-full bg-muted">
-          <Image
-            source={{
-              uri: product.imageUrl,
-            }}
-            className="h-full w-full"
-            resizeMode="cover"
-          />
+        <View className="h-40 w-full bg-muted items-center justify-center">
+          {imgError ? (
+            <CameraOff size={40} color="#9ca3af" />
+          ) : (
+            <Image
+              source={imageSource}
+              onError={() => setImgError(true)}
+              className="h-full w-full"
+              resizeMode="cover"
+            />
+          )}
         </View>
         <View className="gap-1 p-4">
           <Text className="text-lg font-bold text-foreground" numberOfLines={1}>
@@ -70,19 +84,17 @@ export function ProductCard({ product, variant = 'full', className }: ProductCar
           'overflow-hidden rounded-3xl border border-border bg-white shadow-sm',
           className
         )}>
-        <View className="h-32 w-full bg-muted">
-          <Image
-            source={{
-              uri: product.imageUrl,
-              headers: {
-                Accept: 'image/*',
-                'User-Agent':
-                  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-              },
-            }}
-            className="h-full w-full"
-            resizeMode="cover"
-          />
+        <View className="h-32 w-full bg-muted items-center justify-center">
+          {imgError ? (
+            <CameraOff size={32} color="#9ca3af" />
+          ) : (
+            <Image
+              source={imageSource}
+              onError={() => setImgError(true)}
+              className="h-full w-full"
+              resizeMode="cover"
+            />
+          )}
         </View>
         <View className="gap-2 p-3">
           <View>
@@ -133,19 +145,17 @@ export function ProductCard({ product, variant = 'full', className }: ProductCar
         className
       )}>
       {/* Image Container */}
-      <View className="relative h-48 w-full bg-muted">
-        <Image
-          source={{
-            uri: product.imageUrl,
-            headers: {
-              Accept: 'image/*',
-              'User-Agent':
-                'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-            },
-          }}
-          className="h-full w-full"
-          resizeMode="cover"
-        />
+      <View className="relative h-48 w-full bg-muted items-center justify-center">
+        {imgError ? (
+          <CameraOff size={48} color="#9ca3af" />
+        ) : (
+          <Image
+            source={imageSource}
+            onError={() => setImgError(true)}
+            className="h-full w-full"
+            resizeMode="cover"
+          />
+        )}
       </View>
 
       {/* Content Container */}
