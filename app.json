@@ -21,11 +21,11 @@
     },
     "android": {
       "edgeToEdgeEnabled": true,
-      "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/fox.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.irsyaadbp.mifstore"
     },
     "web": {
       "bundler": "metro",
@@ -38,6 +38,18 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "19c6119c-d5ca-4664-a95a-82f656c42123"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/19c6119c-d5ca-4664-a95a-82f656c42123"
     }
   }
 }

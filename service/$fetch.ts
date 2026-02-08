@@ -3,7 +3,7 @@ import Constants from 'expo-constants';
 
 // Dynamically determine the machine IP for development
 const hostUri = Constants.expoConfig?.hostUri?.split(':')[0];
-const BASE_URL = process.env.EXPO_PUBLIC_API_URL ? process.env.EXPO_PUBLIC_API_URL : `http://${hostUri}:5001`;
+const BASE_URL = process.env.EXPO_PUBLIC_API_URL ? process.env.EXPO_PUBLIC_API_URL : `http://${hostUri}:5000`;
 
 interface FetchOptions extends RequestInit {
   body?: any;
